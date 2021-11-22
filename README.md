@@ -31,5 +31,6 @@
 # What to add
 * React performance optimization
 * Gradient color
+* Box shadow
 * Background themes
 * Random custom
