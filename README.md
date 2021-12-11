@@ -10,7 +10,7 @@
 * React
 * TypeScript
 * Styled components
-* ContextAPI
+* Redux
 
 # Features
 * Color
