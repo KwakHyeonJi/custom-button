@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-
-import { useCustomState, useCustomDispatch, useCustomCurrentId } from 'components/CustomContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from 'store/modules';
+import { changeText } from 'store/modules/custom';
 
 const Wrapper = styled.div`
   display: flex;
@@ -25,28 +26,28 @@ const StyledInput = styled.input`
 `;
 
 const CustomText = () => {
-  const id = useCustomCurrentId();
-  const state = useCustomState();
-  const dispatch = useCustomDispatch();
+  const customs = useSelector((state: RootState) => state.custom);
+  const dispatch = useDispatch();
+  const { id, text } = customs.find((custom) => custom.show);
 
-  const [input, setInput] = useState(state.find((custom) => custom.id === id).textSetting);
+  const [value, setValue] = useState(text);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value);
-  const handleBlur = () => dispatch({ type: 'CHANGE_TEXT', id, text: input });
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value);
+  const handleBlur = () => dispatch(changeText(id, value));
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch({ type: 'CHANGE_TEXT', id, text: input });
+    dispatch(changeText(id, value));
   };
 
   useEffect(() => {
-    setInput(state.find((custom) => custom.id === id).textSetting);
+    setValue(text);
   }, [id]);
 
   return (
     <Wrapper>
       <Title>Text</Title>
       <form onSubmit={handleSubmit}>
-        <StyledInput type="text" value={input} onBlur={handleBlur} onChange={handleChange} maxLength={50} />
+        <StyledInput type="text" value={value} onBlur={handleBlur} onChange={handleChange} maxLength={50} />
       </form>
     </Wrapper>
   );

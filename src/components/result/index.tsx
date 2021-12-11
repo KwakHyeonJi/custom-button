@@ -1,5 +1,6 @@
-import { useCustomCurrentId, useCustomState } from 'components/CustomContext';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from 'store/modules';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
@@ -26,9 +27,19 @@ const CopyButton = styled.button`
 `;
 
 const CustomResult = () => {
-  const id = useCustomCurrentId();
-  const state = useCustomState();
-  const [setting, setSetting] = useState(state.find((custom) => custom.id === id));
+  const customs = useSelector((state: RootState) => state.custom);
+  const {
+    colorBackground,
+    colorTransparent,
+    colorBorder,
+    colorText,
+    sizeWidth,
+    sizeHeight,
+    sizeText,
+    shapeBorderWidth,
+    shapeBorderStyle,
+    shapeBorderRadius,
+  } = customs.find((custom) => custom.show);
 
   const [copyText, setCopyText] = useState('Copy');
   const copyRef = useRef(null);
@@ -45,30 +56,26 @@ const CustomResult = () => {
       });
   };
 
-  useEffect(() => setSetting(state.find((custom) => custom.id === id)), [id]);
-
   return (
     <Wrapper>
       <div ref={copyRef}>
         Overflow: hidden;
         <br />
-        width: {setting.sizeSetting.width}px;
+        width: {sizeWidth}px;
         <br />
-        height: {setting.sizeSetting.height}px;
+        height: {sizeHeight}px;
         <br />
         border:
-        {setting.colorSetting.border
-          ? `${setting.shapeSetting.borderWidth}px ${setting.shapeSetting.borderStyle} ${setting.colorSetting.border}`
-          : 'none'}
+        {colorBorder ? `${shapeBorderWidth}px ${shapeBorderStyle} ${colorBorder}` : 'none'}
         ;
         <br />
-        border-radius: {setting.shapeSetting.borderRadius}px;
+        border-radius: {shapeBorderRadius}px;
         <br />
-        background: {setting.colorSetting.transparent ? 'transparent' : setting.colorSetting.background};
+        background: {colorTransparent ? 'transparent' : colorBackground};
         <br />
-        color: {setting.colorSetting.text};
+        color: {colorText};
         <br />
-        font-size: {setting.sizeSetting.text}px;
+        font-size: {sizeText}px;
       </div>
       <CopyButton type="button" onClick={handleCopyClipBoard}>
         {copyText}

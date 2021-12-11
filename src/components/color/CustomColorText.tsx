@@ -1,19 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { ColorResult } from 'react-color';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { useCustomState, useCustomDispatch, useCustomCurrentId } from 'components/CustomContext';
+import { RootState } from 'store/modules';
+import { changeColorText } from 'store/modules/custom';
 import { ColorPicker, Swatch } from 'components/ColorPicker';
+import Title from 'components/Title';
 
 const Wrapper = styled.div`
   display: flex;
   height: 33px;
   margin-top: 15px;
-`;
-
-const Title = styled.span`
-  margin-right: auto;
-  font-size: 0.9rem;
 `;
 
 const StyledSet = styled.div`
@@ -46,30 +44,31 @@ const ColorPickerWrapper = styled.div`
 `;
 
 const CustomColorText = () => {
-  const id = useCustomCurrentId();
-  const state = useCustomState();
-  const dispatch = useCustomDispatch();
+  const customs = useSelector((state: RootState) => state.custom);
+  const dispatch = useDispatch();
+  const { id, colorText } = customs.find((custom) => custom.show);
+
   const inputRef = useRef(null);
 
-  const [input, setInput] = useState(state.find((custom) => custom.id === id).colorSetting.text);
+  const [value, setValue] = useState(colorText);
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value);
-  const handleBlur = () => dispatch({ type: 'CHANGE_COLOR_TEXT', id, color: input });
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value);
+  const handleBlur = () => dispatch(changeColorText(id, value));
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     inputRef.current.blur();
   };
 
   const handleOpenColor = () => setDisplayColorPicker(true);
-  const handleChangeColor = (c: ColorResult) => setInput(c.hex);
+  const handleChangeColor = (c: ColorResult) => setValue(c.hex);
   const handleCloseColor = () => {
     setDisplayColorPicker(false);
-    dispatch({ type: 'CHANGE_COLOR_TEXT', id, color: input });
+    dispatch(changeColorText(id, value));
   };
 
   useEffect(() => {
-    setInput(state.find((custom) => custom.id === id).colorSetting.text);
+    setValue(colorText);
   }, [id]);
 
   return (
@@ -81,16 +80,16 @@ const CustomColorText = () => {
             type="text"
             placeholder="#fff"
             ref={inputRef}
-            value={input}
+            value={value}
             maxLength={7}
             onChange={handleChange}
             onBlur={handleBlur}
           />
         </form>
-        <Swatch onClick={handleOpenColor} hex={input} />
+        <Swatch onClick={handleOpenColor} hex={value} />
         {displayColorPicker && (
           <ColorPickerWrapper>
-            <ColorPicker hex={input} onClose={handleCloseColor} onChange={handleChangeColor} />
+            <ColorPicker hex={value} onClose={handleCloseColor} onChange={handleChangeColor} />
           </ColorPickerWrapper>
         )}
       </StyledSet>

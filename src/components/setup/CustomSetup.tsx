@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { useCustomState, useCustomCurrentId, useCustomSetCurrentId } from 'components/CustomContext';
+import { RootState } from 'store/modules';
+import { select } from 'store/modules/custom';
 import CustomTab from 'components/setup/CustomTab';
 import CustomSetupContent from 'components/setup/CustomSetupContent';
 import CustomCreate from 'components/setup/CustomCreate';
@@ -28,31 +30,32 @@ const CustomCreateButton = styled.button<{ active: boolean }>`
 `;
 
 const CustomSetup = () => {
-  const state = useCustomState();
-  const currentId = useCustomCurrentId();
-  const setCurrentId = useCustomSetCurrentId();
+  const customs = useSelector((state: RootState) => state.custom);
+  const dispatch = useDispatch();
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const handleChange = (id: number) => setCurrentId(id);
+  const handleSelect = (id: number) => {
+    dispatch(select(id));
+  };
 
   return (
     <>
       <CustomTabWrapper>
         <CustomTabs>
-          {state.map((custom) => (
+          {customs.map((custom) => (
             <CustomTab
               key={custom.id}
               id={custom.id}
               name={custom.name}
-              onChange={() => handleChange(custom.id)}
-              checked={custom.id === currentId}
+              onChange={() => handleSelect(custom.id)}
+              checked={custom.show}
             />
           ))}
         </CustomTabs>
-        <CustomCreateButton type="button" onClick={handleOpen} active={state.length < 8}>
+        <CustomCreateButton type="button" onClick={handleOpen} active={customs.length < 8}>
           New Button
         </CustomCreateButton>
       </CustomTabWrapper>

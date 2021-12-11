@@ -1,18 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { useCustomState, useCustomDispatch, useCustomCurrentId } from 'components/CustomContext';
+import { RootState } from 'store/modules';
+import { changeShapeBorderRadius } from 'store/modules/custom';
+import Title from 'components/Title';
 
 const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   height: 33px;
   margin-top: 90px;
-`;
-
-const Title = styled.span`
-  margin-right: auto;
-  font-size: 0.9rem;
 `;
 
 const StyledSet = styled.div`
@@ -42,22 +40,23 @@ const StyledText = styled.span`
 `;
 
 const CustomShapeBorderRadius = () => {
-  const id = useCustomCurrentId();
-  const state = useCustomState();
-  const dispatch = useCustomDispatch();
+  const customs = useSelector((state: RootState) => state.custom);
+  const dispatch = useDispatch();
+  const { id, shapeBorderRadius } = customs.find((custom) => custom.show);
+
   const inputRef = useRef(null);
 
-  const [input, setInput] = useState(state.find((custom) => custom.id === id).shapeSetting.borderRadius);
+  const [value, setValue] = useState(shapeBorderRadius);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value);
-  const handleBlur = () => dispatch({ type: 'CHANGE_SHAPE_BORDER_RADIUS', id, size: input });
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value);
+  const handleBlur = () => dispatch(changeShapeBorderRadius(id, value));
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     inputRef.current.blur();
   };
 
   useEffect(() => {
-    setInput(state.find((custom) => custom.id === id).shapeSetting.borderRadius);
+    setValue(shapeBorderRadius);
   }, [id]);
 
   return (
@@ -70,7 +69,7 @@ const CustomShapeBorderRadius = () => {
             min="1"
             max="1000"
             ref={inputRef}
-            value={input}
+            value={value}
             onChange={handleChange}
             onBlur={handleBlur}
           />

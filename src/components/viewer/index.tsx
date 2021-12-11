@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 
 import CustomButton from 'components/viewer/CustomButton';
-import { useCustomState, useCustomCurrentId } from 'components/CustomContext';
 
 const Wrapper = styled.div`
   display: flex;
@@ -19,17 +18,9 @@ const Wrapper = styled.div`
 `;
 
 const CustomViewer = () => {
-  const state = useCustomState();
-  const currentId = useCustomCurrentId();
-  const setting = state.find((custom) => custom.id === currentId);
   return (
     <Wrapper>
-      <CustomButton
-        colorSetting={setting.colorSetting}
-        sizeSetting={setting.sizeSetting}
-        shapeSetting={setting.shapeSetting}
-        textSetting={setting.textSetting}
-      />
+      <CustomButton />
     </Wrapper>
   );
 };

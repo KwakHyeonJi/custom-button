@@ -1,17 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { useCustomState, useCustomDispatch, useCustomCurrentId } from 'components/CustomContext';
+import { RootState } from 'store/modules';
+import Title from 'components/Title';
+import { changeSizeText } from 'store/modules/custom';
 
 const Wrapper = styled.div`
   display: flex;
   height: 33px;
   margin-top: 15px;
-`;
-
-const Title = styled.span`
-  margin-right: auto;
-  font-size: 0.9rem;
 `;
 
 const StyledSet = styled.div`
@@ -41,27 +39,28 @@ const StyledText = styled.span`
 `;
 
 const CustomSizeText = () => {
-  const id = useCustomCurrentId();
-  const state = useCustomState();
-  const dispatch = useCustomDispatch();
+  const customs = useSelector((state: RootState) => state.custom);
+  const dispatch = useDispatch();
+  const { id, sizeText } = customs.find((custom) => custom.show);
+
   const inputRef = useRef(null);
 
-  const [input, setInput] = useState(state.find((custom) => custom.id === id).sizeSetting.text);
+  const [value, setValue] = useState(sizeText);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
+    setValue(e.target.value);
     if (e.target.type === 'range') {
-      dispatch({ type: 'CHANGE_SIZE_TEXT', id, size: input });
+      dispatch(changeSizeText(id, value));
     }
   };
-  const handleBlur = () => dispatch({ type: 'CHANGE_SIZE_TEXT', id, size: input });
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleBlur = () => dispatch(changeSizeText(id, value));
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     inputRef.current.blur();
   };
 
   useEffect(() => {
-    setInput(state.find((custom) => custom.id === id).sizeSetting.text);
+    setValue(sizeText);
   }, [id]);
 
   return (
@@ -74,7 +73,7 @@ const CustomSizeText = () => {
             min="10"
             max="200"
             ref={inputRef}
-            value={input}
+            value={value}
             onBlur={handleBlur}
             onChange={handleChange}
           />

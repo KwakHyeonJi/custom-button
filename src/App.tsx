@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 
 import GlobalStyle from 'styles/GlobalStyle';
-import { CustomProvider } from 'components/CustomContext';
 import CustomSetup from 'components/setup/CustomSetup';
 import CustomViewer from 'components/viewer';
 
@@ -17,10 +16,8 @@ const App = () => {
     <>
       <GlobalStyle />
       <Wrapper>
-        <CustomProvider>
-          <CustomSetup />
-          <CustomViewer />
-        </CustomProvider>
+        <CustomSetup />
+        <CustomViewer />
       </Wrapper>
     </>
   );

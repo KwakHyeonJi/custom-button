@@ -1,6 +1,8 @@
-import { useCustomDispatch, useCustomSetCurrentId } from 'components/CustomContext';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+
+import { create } from 'store/modules/custom';
 
 const Block = styled.div<{ active: boolean }>`
   position: fixed;
@@ -100,18 +102,14 @@ interface Props {
 }
 
 const CustomCreate = ({ open, onClose }: Props) => {
-  const nextId = useRef(2);
-  const dispatch = useCustomDispatch();
-  const setCurrentId = useCustomSetCurrentId();
+  const dispatch = useDispatch();
 
   const [name, setName] = useState('Button');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value);
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch({ type: 'CREATE', id: nextId.current, name });
-    setCurrentId(nextId.current);
-    nextId.current += 1;
+    dispatch(create(name));
     onClose();
   };
 

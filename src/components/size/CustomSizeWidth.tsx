@@ -1,18 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { useCustomState, useCustomDispatch, useCustomCurrentId } from 'components/CustomContext';
+import { RootState } from 'store/modules';
+import { changeSizeWidth } from 'store/modules/custom';
 import OptionRange from 'components/OptionRange';
+import Title from 'components/Title';
 
 const Wrapper = styled.div`
   display: flex;
   height: 33px;
   margin-top: 15px;
-`;
-
-const Title = styled.span`
-  margin-right: auto;
-  font-size: 0.9rem;
 `;
 
 const StyledSet = styled.div`
@@ -42,28 +40,29 @@ const StyledText = styled.span`
 `;
 
 const CustomSizeWidth = () => {
-  const id = useCustomCurrentId();
-  const state = useCustomState();
-  const dispatch = useCustomDispatch();
+  const customs = useSelector((state: RootState) => state.custom);
+  const dispatch = useDispatch();
+  const { id, sizeWidth } = customs.find((custom) => custom.show);
+
   const inputRef = useRef(null);
 
-  const [input, setInput] = useState(state.find((custom) => custom.id === id).sizeSetting.width);
+  const [value, setValue] = useState(sizeWidth);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
+    setValue(e.target.value);
     if (e.target.type === 'range') {
-      dispatch({ type: 'CHANGE_SIZE_WIDTH', id, size: input });
+      dispatch(changeSizeWidth(id, value));
     }
   };
 
-  const handleBlur = () => dispatch({ type: 'CHANGE_SIZE_WIDTH', id, size: input });
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleBlur = () => dispatch(changeSizeWidth(id, value));
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     inputRef.current.blur();
   };
 
   useEffect(() => {
-    setInput(state.find((custom) => custom.id === id).sizeSetting.width);
+    setValue(sizeWidth);
   }, [id]);
 
   return (
@@ -76,14 +75,14 @@ const CustomSizeWidth = () => {
             min="1"
             max="800"
             ref={inputRef}
-            value={input}
+            value={value}
             onBlur={handleBlur}
             onChange={handleChange}
           />
         </form>
         <StyledText>px</StyledText>
       </StyledSet>
-      <OptionRange min="1" max="800" value={input} onChange={handleChange} />
+      <OptionRange min="1" max="800" value={value} onChange={handleChange} />
     </Wrapper>
   );
 };

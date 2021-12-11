@@ -1,14 +1,7 @@
-import React from 'react';
+import React, { memo } from 'react';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  width: 70%;
-`;
-
-const StyledItem = styled.div`
   display: flex;
   align-items: center;
   width: 150px;
@@ -66,25 +59,21 @@ const StyledText = styled.span`
 `;
 
 interface Props {
-  items: string[];
+  item: string;
   name: string;
   checked: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const OptionRadio = ({ items, name, checked, onChange }: Props) => {
+const OptionRadio = ({ item, name, checked, onChange }: Props) => {
   return (
     <Wrapper>
-      {items.map((item) => (
-        <StyledItem key={item}>
-          <StyledInput type="radio" key={item} id={item} name={name} checked={checked === item} onChange={onChange} />
-          <StyledRadio htmlFor={item}>
-            <StyledText>{item}</StyledText>
-          </StyledRadio>
-        </StyledItem>
-      ))}
+      <StyledInput type="radio" id={item} name={name} checked={checked === item} onChange={onChange} />
+      <StyledRadio htmlFor={item}>
+        <StyledText>{item}</StyledText>
+      </StyledRadio>
     </Wrapper>
   );
 };
 
-export default OptionRadio;
+export default memo(OptionRadio);

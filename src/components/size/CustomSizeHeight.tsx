@@ -1,18 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { useCustomState, useCustomDispatch, useCustomCurrentId } from 'components/CustomContext';
+import { RootState } from 'store/modules';
+import { changeSizeHeight } from 'store/modules/custom';
 import OptionRange from 'components/OptionRange';
+import Title from 'components/Title';
 
 const Wrapper = styled.div`
   display: flex;
   height: 33px;
   margin-top: 15px;
-`;
-
-const Title = styled.span`
-  margin-right: auto;
-  font-size: 0.9rem;
 `;
 
 const StyledSet = styled.div`
@@ -42,27 +40,28 @@ const StyledText = styled.span`
 `;
 
 const CustomSizeHeight = () => {
-  const id = useCustomCurrentId();
-  const state = useCustomState();
-  const dispatch = useCustomDispatch();
+  const customs = useSelector((state: RootState) => state.custom);
+  const dispatch = useDispatch();
+  const { id, sizeHeight } = customs.find((custom) => custom.show);
+
   const inputRef = useRef(null);
 
-  const [input, setInput] = useState(state.find((custom) => custom.id === id).sizeSetting.height);
+  const [value, setValue] = useState(sizeHeight);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
+    setValue(e.target.value);
     if (e.target.type === 'range') {
-      dispatch({ type: 'CHANGE_SIZE_HEIGHT', id, size: input });
+      dispatch(changeSizeHeight(id, value));
     }
   };
-  const handleBlur = () => dispatch({ type: 'CHANGE_SIZE_HEIGHT', id, size: input });
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleBlur = () => dispatch(changeSizeHeight(id, value));
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     inputRef.current.blur();
   };
 
   useEffect(() => {
-    setInput(state.find((custom) => custom.id === id).sizeSetting.height);
+    setValue(sizeHeight);
   }, [id]);
 
   return (
@@ -75,14 +74,14 @@ const CustomSizeHeight = () => {
             min="1"
             max="300"
             ref={inputRef}
-            value={input}
+            value={value}
             onChange={handleChange}
             onBlur={handleBlur}
           />
         </form>
         <StyledText>px</StyledText>
       </StyledSet>
-      <OptionRange min="1" max="300" value={input} onChange={handleChange} />
+      <OptionRange min="1" max="300" value={value} onChange={handleChange} />
     </Wrapper>
   );
 };

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import { useCustomState, useCustomDispatch, useCustomCurrentId, useCustomSetCurrentId } from 'components/CustomContext';
 import Menu from 'components/setup/CustomMenu';
+import CustomDelete from 'components/setup/CustomDelete';
 import CustomColor from 'components/color';
 import CustomSize from 'components/size';
 import CustomShape from 'components/shape';
@@ -20,41 +20,11 @@ const Wrapper = styled.div`
   background: #fff;
 `;
 
-const CustomDeleteButton = styled.button`
-  position: absolute;
-  right: 25px;
-  bottom: 25px;
-  padding: 3px 20px;
-
-  border-radius: 5px;
-  background: #5844cf;
-  color: #fff;
-
-  &:disabled {
-    display: none;
-  }
-`;
-
 const CustomSetupContent = () => {
-  const state = useCustomState();
-  const id = useCustomCurrentId();
-  const setId = useCustomSetCurrentId();
-  const dispatch = useCustomDispatch();
-
   const [menu, setMenu] = useState('color');
   const handleChangeMenu = (e: React.MouseEvent<HTMLInputElement>) => {
     const target = e.target as Element;
     setMenu(target.id);
-  };
-
-  const handleDelete = () => {
-    const index = state.findIndex((custom) => custom.id === id);
-    dispatch({ type: 'DELETE', id });
-    if (index) {
-      setId(state[0].id);
-    } else {
-      setId(state[1].id);
-    }
   };
 
   return (
@@ -65,9 +35,7 @@ const CustomSetupContent = () => {
       {menu === 'shape' && <CustomShape />}
       {menu === 'text' && <CustomText />}
       {menu === 'result' && <CustomResult />}
-      <CustomDeleteButton type="button" onClick={handleDelete} disabled={state.length === 1}>
-        Delete
-      </CustomDeleteButton>
+      <CustomDelete />
     </Wrapper>
   );
 };

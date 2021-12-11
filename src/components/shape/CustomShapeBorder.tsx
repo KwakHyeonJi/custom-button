@@ -1,19 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { useCustomState, useCustomDispatch, useCustomCurrentId } from 'components/CustomContext';
+import { RootState } from 'store/modules';
+import { BorderStyle, changeShapeBorderStyle, changeShapeBorderWidth } from 'store/modules/custom';
 import OptionRadio from 'components/OptionRadio';
+import Title from 'components/Title';
 
 const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   height: 33px;
   margin-top: 15px;
-`;
-
-const Title = styled.span`
-  margin-right: auto;
-  font-size: 0.9rem;
 `;
 
 const StyledSet = styled.div`
@@ -42,33 +40,42 @@ const StyledText = styled.span`
   margin-left: 5px;
 `;
 
+const OptionWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  width: 70%;
+`;
+
 const CustomShapeBorder = () => {
-  const id = useCustomCurrentId();
-  const state = useCustomState();
-  const dispatch = useCustomDispatch();
+  const customs = useSelector((state: RootState) => state.custom);
+  const dispatch = useDispatch();
+  const { id, shapeBorderWidth, shapeBorderStyle } = customs.find((custom) => custom.show);
+
   const inputRef = useRef(null);
 
-  const currentSetting = state.find((custom) => custom.id === id).shapeSetting;
-  const [input, setInput] = useState(currentSetting.borderWidth);
-  const [style, setStyle] = useState(currentSetting.borderStyle);
+  const [value, setValue] = useState(shapeBorderWidth);
+  const [style, setStyle] = useState(shapeBorderStyle);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value);
-  const handleBlur = () => dispatch({ type: 'CHANGE_SHAPE_BORDER_WIDTH', id, size: input });
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const styles: BorderStyle[] = ['Solid', 'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset'];
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value);
+  const handleBlur = () => dispatch(changeShapeBorderWidth(id, value));
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     inputRef.current.blur();
   };
 
-  const handleChangeStyle = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeStyle = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const target = e.target as Element;
-    setStyle(target.id);
-    dispatch({ type: 'CHANGE_SHAPE_BORDER_STYLE', id, style: target.id });
-  };
+    const targetId = target.id as BorderStyle;
+    setStyle(targetId);
+    dispatch(changeShapeBorderStyle(id, targetId));
+  }, []);
 
   useEffect(() => {
-    const currentSetting = state.find((custom) => custom.id === id).shapeSetting;
-    setInput(currentSetting.borderWidth);
-    setStyle(currentSetting.borderStyle);
+    setValue(shapeBorderWidth);
+    setStyle(shapeBorderStyle);
   }, [id]);
 
   return (
@@ -81,19 +88,18 @@ const CustomShapeBorder = () => {
             min="1"
             max="80"
             ref={inputRef}
-            value={input}
+            value={value}
             onChange={(e) => handleChange(e)}
             onBlur={handleBlur}
           />
         </form>
         <StyledText>px</StyledText>
       </StyledSet>
-      <OptionRadio
-        items={['Solid', 'Dotted', 'Dashed', 'Double', 'Groove', 'Ridge', 'Inset', 'Outset']}
-        name="border_style"
-        checked={style}
-        onChange={handleChangeStyle}
-      />
+      <OptionWrapper>
+        {styles.map((item) => (
+          <OptionRadio key={item} item={item} name="border_style" checked={style} onChange={handleChangeStyle} />
+        ))}
+      </OptionWrapper>
     </Wrapper>
   );
 };

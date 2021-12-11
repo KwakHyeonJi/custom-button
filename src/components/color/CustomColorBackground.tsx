@@ -1,20 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { ColorResult } from 'react-color';
+import { useSelector, useDispatch } from 'react-redux';
 
-import { useCustomState, useCustomDispatch, useCustomCurrentId } from 'components/CustomContext';
+import { RootState } from 'store/modules';
+import { changeColorBackground, changeColorTransparent } from 'store/modules/custom';
 import { ColorPicker, Swatch } from 'components/ColorPicker';
 import OptionCheckbox from 'components/OptionCheckbox';
+import Title from 'components/Title';
 
 const Wrapper = styled.div`
   display: flex;
   height: 33px;
   margin-top: 15px;
-`;
-
-const Title = styled.span`
-  margin-right: auto;
-  font-size: 0.9rem;
 `;
 
 const StyledSet = styled.div`
@@ -51,19 +49,19 @@ const ColorPickerWrapper = styled.div`
 `;
 
 const CustomColorBackground = () => {
-  const id = useCustomCurrentId();
-  const state = useCustomState();
-  const dispatch = useCustomDispatch();
+  const customs = useSelector((state: RootState) => state.custom);
+  const dispatch = useDispatch();
+  const { id, colorBackground, colorTransparent } = customs.find((custom) => custom.show);
+
   const inputRef = useRef(null);
 
-  const currentSetting = state.find((custom) => custom.id === id).colorSetting;
-  const [input, setInput] = useState(currentSetting.background);
+  const [value, setValue] = useState(colorBackground);
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
-  const [transparent, setTransparent] = useState(currentSetting.transparent);
+  const [transparent, setTransparent] = useState(colorTransparent);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value);
-  const handleBlur = () => dispatch({ type: 'CHANGE_COLOR_BACKGROUND', id, color: input });
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value);
+  const handleBlur = () => dispatch(changeColorBackground(id, value));
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     inputRef.current.blur();
   };
@@ -71,21 +69,20 @@ const CustomColorBackground = () => {
   const handleOpenColor = () => {
     if (!transparent) setDisplayColorPicker(true);
   };
-  const handleChangeColor = (c: ColorResult) => setInput(c.hex);
+  const handleChangeColor = (c: ColorResult) => setValue(c.hex);
   const handleCloseColor = () => {
     setDisplayColorPicker(false);
-    dispatch({ type: 'CHANGE_COLOR_BACKGROUND', id, color: input });
+    dispatch(changeColorBackground(id, value));
   };
 
   const handleChangeTransparent = () => {
     setTransparent(!transparent);
-    dispatch({ type: 'CHANGE_COLOR_TRANSPARENT', id });
+    dispatch(changeColorTransparent(id));
   };
 
   useEffect(() => {
-    const currentSetting = state.find((custom) => custom.id === id).colorSetting;
-    setInput(currentSetting.background);
-    setTransparent(currentSetting.transparent);
+    setValue(colorBackground);
+    setTransparent(colorTransparent);
   }, [id]);
 
   return (
@@ -97,17 +94,17 @@ const CustomColorBackground = () => {
             type="text"
             placeholder="#5844cf"
             ref={inputRef}
-            value={input}
+            value={value}
             maxLength={7}
             disabled={transparent}
             onChange={handleChange}
             onBlur={handleBlur}
           />
         </form>
-        <Swatch onClick={handleOpenColor} hex={input} />
+        <Swatch onClick={handleOpenColor} hex={value} />
         {displayColorPicker && (
           <ColorPickerWrapper>
-            <ColorPicker hex={input} onClose={handleCloseColor} onChange={handleChangeColor} />
+            <ColorPicker hex={value} onClose={handleCloseColor} onChange={handleChangeColor} />
           </ColorPickerWrapper>
         )}
       </StyledSet>
