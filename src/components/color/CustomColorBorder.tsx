@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import styled from 'styled-components';
 import { ColorResult } from 'react-color';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import { RootState } from 'store/modules';
 import { changeColorBorder } from 'store/modules/custom';
 import { ColorPicker, Swatch } from 'components/ColorPicker';
 import Title from 'components/Title';
@@ -43,15 +42,17 @@ const ColorPickerWrapper = styled.div`
   z-index: 2;
 `;
 
-const CustomColorBorder = () => {
-  const customs = useSelector((state: RootState) => state.custom);
-  const dispatch = useDispatch();
-  const { id, colorBorder } = customs.find((custom) => custom.show);
+interface Props {
+  id: number;
+  colorBorder: string;
+}
 
-  const inputRef = useRef(null);
+const CustomColorBorder = ({ id, colorBorder }: Props) => {
+  const dispatch = useDispatch();
 
   const [value, setValue] = useState(colorBorder);
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
+  const inputRef = useRef(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value);
   const handleBlur = () => dispatch(changeColorBorder(id, value));
@@ -97,4 +98,4 @@ const CustomColorBorder = () => {
   );
 };
 
-export default CustomColorBorder;
+export default memo(CustomColorBorder);

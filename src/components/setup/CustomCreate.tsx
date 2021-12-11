@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
@@ -131,4 +131,4 @@ const CustomCreate = ({ open, onClose }: Props) => {
   );
 };
 
-export default CustomCreate;
+export default memo(CustomCreate);

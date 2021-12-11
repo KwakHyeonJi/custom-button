@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import styled from 'styled-components';
 import { ColorResult } from 'react-color';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import { RootState } from 'store/modules';
 import { changeColorText } from 'store/modules/custom';
 import { ColorPicker, Swatch } from 'components/ColorPicker';
 import Title from 'components/Title';
@@ -43,15 +42,17 @@ const ColorPickerWrapper = styled.div`
   z-index: 2;
 `;
 
-const CustomColorText = () => {
-  const customs = useSelector((state: RootState) => state.custom);
-  const dispatch = useDispatch();
-  const { id, colorText } = customs.find((custom) => custom.show);
+interface Props {
+  id: number;
+  colorText: string;
+}
 
-  const inputRef = useRef(null);
+const CustomColorText = ({ id, colorText }: Props) => {
+  const dispatch = useDispatch();
 
   const [value, setValue] = useState(colorText);
   const [displayColorPicker, setDisplayColorPicker] = useState(false);
+  const inputRef = useRef(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value);
   const handleBlur = () => dispatch(changeColorText(id, value));
@@ -97,4 +98,4 @@ const CustomColorText = () => {
   );
 };
 
-export default CustomColorText;
+export default memo(CustomColorText);

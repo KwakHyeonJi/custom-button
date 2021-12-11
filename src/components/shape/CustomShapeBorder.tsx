@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, memo } from 'react';
 import styled from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import { RootState } from 'store/modules';
 import { BorderStyle, changeShapeBorderStyle, changeShapeBorderWidth } from 'store/modules/custom';
 import OptionRadio from 'components/OptionRadio';
 import Title from 'components/Title';
@@ -47,13 +46,16 @@ const OptionWrapper = styled.div`
   width: 70%;
 `;
 
-const CustomShapeBorder = () => {
-  const customs = useSelector((state: RootState) => state.custom);
+interface Props {
+  id: number;
+  shapeBorderWidth: string;
+  shapeBorderStyle: BorderStyle;
+}
+
+const CustomShapeBorder = ({ id, shapeBorderWidth, shapeBorderStyle }: Props) => {
   const dispatch = useDispatch();
-  const { id, shapeBorderWidth, shapeBorderStyle } = customs.find((custom) => custom.show);
 
   const inputRef = useRef(null);
-
   const [value, setValue] = useState(shapeBorderWidth);
   const [style, setStyle] = useState(shapeBorderStyle);
 
@@ -104,4 +106,4 @@ const CustomShapeBorder = () => {
   );
 };
 
-export default CustomShapeBorder;
+export default memo(CustomShapeBorder);

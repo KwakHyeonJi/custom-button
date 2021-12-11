@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import styled from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import { RootState } from 'store/modules';
 import Title from 'components/Title';
 import { changeSizeText } from 'store/modules/custom';
 
@@ -38,13 +37,15 @@ const StyledText = styled.span`
   margin-left: 5px;
 `;
 
-const CustomSizeText = () => {
-  const customs = useSelector((state: RootState) => state.custom);
+interface Props {
+  id: number;
+  sizeText: string;
+}
+
+const CustomSizeText = ({ id, sizeText }: Props) => {
   const dispatch = useDispatch();
-  const { id, sizeText } = customs.find((custom) => custom.show);
 
   const inputRef = useRef(null);
-
   const [value, setValue] = useState(sizeText);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,4 +85,4 @@ const CustomSizeText = () => {
   );
 };
 
-export default CustomSizeText;
+export default memo(CustomSizeText);

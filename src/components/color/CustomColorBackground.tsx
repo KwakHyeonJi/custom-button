@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import styled from 'styled-components';
 import { ColorResult } from 'react-color';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import { RootState } from 'store/modules';
 import { changeColorBackground, changeColorTransparent } from 'store/modules/custom';
 import { ColorPicker, Swatch } from 'components/ColorPicker';
 import OptionCheckbox from 'components/OptionCheckbox';
@@ -48,10 +47,14 @@ const ColorPickerWrapper = styled.div`
   z-index: 2;
 `;
 
-const CustomColorBackground = () => {
-  const customs = useSelector((state: RootState) => state.custom);
+interface Props {
+  id: number;
+  colorBackground: string;
+  colorTransparent: boolean;
+}
+
+const CustomColorBackground = ({ id, colorBackground, colorTransparent }: Props) => {
   const dispatch = useDispatch();
-  const { id, colorBackground, colorTransparent } = customs.find((custom) => custom.show);
 
   const inputRef = useRef(null);
 
@@ -113,4 +116,4 @@ const CustomColorBackground = () => {
   );
 };
 
-export default CustomColorBackground;
+export default memo(CustomColorBackground);

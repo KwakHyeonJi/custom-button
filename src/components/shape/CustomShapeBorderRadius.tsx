@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import { RootState } from 'store/modules';
 import { changeShapeBorderRadius } from 'store/modules/custom';
 import Title from 'components/Title';
 
@@ -39,13 +38,15 @@ const StyledText = styled.span`
   margin-left: 5px;
 `;
 
-const CustomShapeBorderRadius = () => {
-  const customs = useSelector((state: RootState) => state.custom);
+interface Props {
+  id: number;
+  shapeBorderRadius: string;
+}
+
+const CustomShapeBorderRadius = ({ id, shapeBorderRadius }: Props) => {
   const dispatch = useDispatch();
-  const { id, shapeBorderRadius } = customs.find((custom) => custom.show);
 
   const inputRef = useRef(null);
-
   const [value, setValue] = useState(shapeBorderRadius);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value);
@@ -80,4 +81,4 @@ const CustomShapeBorderRadius = () => {
   );
 };
 
-export default CustomShapeBorderRadius;
+export default memo(CustomShapeBorderRadius);

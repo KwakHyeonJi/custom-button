@@ -17,7 +17,7 @@ const Wrapper = styled.div`
 const CopyButton = styled.button`
   position: absolute;
   right: 125px;
-  top: px;
+  bottom: 25px;
   padding: 2px 20px;
 
   border: 1px solid #5844cf;
