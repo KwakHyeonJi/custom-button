@@ -5,37 +5,34 @@ const GlobalStyle = createGlobalStyle`
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  list-style: none;
-  text-decoration: none;
-  border: none;
-  outline: none;
-  resize: none;
-  user-select: none;
 }
 
 body {
-  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
   background: #f5f6fa;
   color: #455a64;
   font-family: 'Poppins', sans-serif;
 }
-  
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-size: initial;
-}
 
 button {
-  font-family: 'Poppins', sans-serif;
+  padding: 0.5rem 1rem;
   cursor: pointer;
+  border: none;
+  font-family: 'Poppins', sans-serif;letter-spacing: 0.5px;
+}
+
+input { 
+  border: none;
+  outline: none;
+  font-family: 'Poppins', sans-serif;
 }
 
 ::-webkit-scrollbar {
-  width: 5px;
   background: transparent;
 }
 
