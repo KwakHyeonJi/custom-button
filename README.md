@@ -2,7 +2,6 @@
 
 - Intuitive button styling
 - You can quickly and easily find and compare the button styles you want
-- Up to 8 buttons can be styled simultaneously
 
 # Demo
 
